@@ -44,7 +44,7 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) user: UpdateUserDto,
-  ): Promise<TUser> {
+  ): Promise<TUserNoPassword> {
     const updatedUser = await this.userService.patch(+id, user);
     if (!updatedUser) throw new Error('User not found');
     return updatedUser;

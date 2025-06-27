@@ -45,13 +45,19 @@ export class UserService {
     });
   }
 
-  async patch(id: number, user: Prisma.UserUpdateInput): Promise<TUser> {
-    return this.dbService.user.update({
+  async patch(
+    id: number,
+    user: Prisma.UserUpdateInput,
+  ): Promise<TUserNoPassword> {
+    const users = await this.dbService.user.update({
       where: {
         id,
       },
       data: user,
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...others } = users;
+    return others;
   }
 
   async create(user: Prisma.UserCreateInput): Promise<TUser> {
