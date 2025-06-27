@@ -1,5 +1,3 @@
-import { JwtSignOptions } from '@nestjs/jwt';
-
 export type TRole = 'USER' | 'ADMIN' | 'STAFF';
 
 export type TUser = {
@@ -12,14 +10,4 @@ export type TUser = {
   updatedAt: Date;
 };
 
-export type TAuthResponse = {
-  accessToken: string;
-  refreshToken: string;
-};
-
-export type TLogin = {
-  email: string;
-  password: string;
-};
-
-export type TJWTSignIn = JwtSignOptions & Omit<TUser, 'password'>;
+export type TUserNoPassword = Omit<TUser, 'password'>;

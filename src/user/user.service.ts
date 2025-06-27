@@ -1,6 +1,6 @@
 import { Injectable, Query } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { TRole, TUser } from '../utils/userSchema';
+import { TRole, TUser, TUserNoPassword } from '../utils/userSchema';
 import { Prisma, User } from 'generated/prisma';
 
 import { Encryption } from 'src/utils/encryption';
@@ -12,21 +12,27 @@ export class UserService {
     private readonly encryption: Encryption,
   ) {}
 
-  async users(@Query('role') role?: TRole): Promise<TUser[]> {
+  async users(@Query('role') role?: TRole): Promise<TUserNoPassword[]> {
     if (role) {
-      return this.dbService.user.findMany({
+      return await this.dbService.user.findMany({
         where: {
           role,
         },
+        omit: {
+          password: true,
+        },
       });
     }
-    return this.dbService.user.findMany();
+    return this.dbService.user.findMany({ omit: { password: true } });
   }
 
-  async user(id: number): Promise<TUser | null> {
-    return this.dbService.user.findUnique({
+  async user(id: number): Promise<TUserNoPassword | null> {
+    return await this.dbService.user.findUnique({
       where: {
         id,
+      },
+      omit: {
+        password: true,
       },
     });
   }

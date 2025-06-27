@@ -11,6 +11,7 @@ import { AppService } from './app.service';
 import { LocalAuthGuard } from 'src/auth/local.guard';
 import { AuthService } from './auth/auth.service';
 import { TUser } from './utils/userSchema';
+import { JwtRefreshAuthGuard } from './auth/jwt.refresh.guard';
 
 @Controller()
 export class AppController {
@@ -26,7 +27,13 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  login(@Request() req: TUser, @Response() res: Res) {
+  login(@Request() req: { user: TUser }, @Response() res: Res) {
+    return this.authService.login(req, res);
+  }
+
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('auth/refresh')
+  refresh(@Request() req: { user: TUser }, @Response() res: Res) {
     return this.authService.login(req, res);
   }
 

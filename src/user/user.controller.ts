@@ -7,16 +7,17 @@ import {
   Patch,
   Delete,
   Query,
+  ParseIntPipe,
   ValidationPipe,
   UseGuards,
 } from '@nestjs/common';
 
 import { User } from 'generated/prisma';
 import { UserService } from './user.service';
-import { TRole, TUser } from '../utils/userSchema';
+import { TRole, TUser, TUserNoPassword } from '../utils/userSchema';
 import { CreateUserDto } from './userDto/createUserDto';
 import { UpdateUserDto } from './userDto/updateUserDto';
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 
 @Controller('users')
 export class UserController {
@@ -24,13 +25,15 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  users(@Query('role') role?: TRole): Promise<TUser[]> {
+  users(@Query('role') role?: TRole): Promise<TUserNoPassword[]> {
     return this.userService.users(role);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async user(@Param('id') id: number): Promise<User | null> {
+  async user(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<TUserNoPassword | null> {
     const user = await this.userService.user(+id);
     if (!user) throw new Error('User not found');
     return user;
@@ -39,7 +42,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) user: UpdateUserDto,
   ): Promise<TUser> {
     const updatedUser = await this.userService.patch(+id, user);
@@ -49,7 +52,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  delete(@Param('id') id: number): Promise<User> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.userService.remove(+id);
   }
 

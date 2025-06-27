@@ -1,6 +1,6 @@
 import { Response, CookieOptions } from 'express';
-import { calculateExpirationDate } from '../utils/dateCalculation';
 import { getEnv } from './getEnv';
+import { calculateCookieExpiresIn } from './dateCalculation';
 
 export const REFRESH_PATH = `${getEnv('HOST')}:${getEnv('PORT')}/${getEnv('API')}/user/refresh`;
 
@@ -12,8 +12,8 @@ const defaultCookie: CookieOptions = {
 };
 
 export const getRefreshTokenCookieOptions = (): CookieOptions => {
-  const expiresIn = getEnv('JWT_REFRESH_TOKEN_EXPIRATION_MS');
-  const expires = calculateExpirationDate(expiresIn);
+  const expiresIn = getEnv('JWT_REFRESH_TOKEN_EXPIRATION_MINS');
+  const expires = calculateCookieExpiresIn(expiresIn);
   return {
     ...defaultCookie,
     expires,
@@ -22,8 +22,8 @@ export const getRefreshTokenCookieOptions = (): CookieOptions => {
 };
 
 export const getAccessTokenCookieOptions = (): CookieOptions => {
-  const expiresIn = getEnv('JWT_ACCESS_TOKEN_EXPIRATION_MS', '1d');
-  const expires = calculateExpirationDate(expiresIn);
+  const expiresIn = getEnv('JWT_ACCESS_TOKEN_EXPIRATION_MINS');
+  const expires = calculateCookieExpiresIn(expiresIn);
   return {
     ...defaultCookie,
     expires,

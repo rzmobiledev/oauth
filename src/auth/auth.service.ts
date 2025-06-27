@@ -1,10 +1,12 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { TUser } from 'src/utils/userSchema';
+import { TUser, TUserNoPassword } from 'src/utils/userSchema';
 import { getEnv } from 'src/utils/getEnv';
 import { setAuthenticationCookies } from 'src/utils/cookies';
+import { Request, Response } from 'express';
+import { TJWTVerify, TJWTUserPayload } from 'src/utils/reqTokenSchema';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { JWTSign } from 'src/utils/jwtSign';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +18,7 @@ export class AuthService {
   async validateUser(
     email: string,
     pass: string,
-  ): Promise<Omit<TUser, 'password'> | null> {
+  ): Promise<TUserNoPassword | null> {
     const user = await this.usersService.validateUser(email);
     if (!user) return null;
 
@@ -32,22 +34,36 @@ export class AuthService {
     return result;
   }
 
-  login(payload: TUser, res: Response) {
-    const payloadContent = { email: payload.email, id: payload.id };
-    const accessToken = this.jwtService.sign(payloadContent, {
-      expiresIn: getEnv('JWT_ACCESS_TOKEN_EXPIRATION_MS') + 's',
-      secret: getEnv('JWT_SECRET_ACCESS'),
-    });
+  login(payload: { user: TUser }, res: Response) {
+    const jwtSign = new JWTSign(
+      this.jwtService,
+      payload.user.email,
+      payload.user.id,
+    );
 
-    const refreshToken = this.jwtService.sign(payloadContent, {
-      expiresIn: getEnv('JWT_REFRESH_TOKEN_EXPIRATION_MS') + 's',
-      secret: getEnv('JWT_SECRET_REFRESH'),
-    });
+    const accessToken = jwtSign.accessToken();
+    const refreshToken = jwtSign.refreshToken();
 
     return setAuthenticationCookies(res, accessToken, refreshToken)
       .status(HttpStatus.OK)
       .json({
         message: 'User login successfully',
       });
+  }
+
+  async verifyRefreshToken(req: Request, payload: TJWTUserPayload) {
+    const refreshToken = String(req.cookies['refreshToken']);
+    const tokenVerified = this.jwtService.verify<TJWTVerify>(refreshToken, {
+      secret: getEnv('JWT_SECRET_REFRESH'),
+    });
+
+    if (tokenVerified.id !== payload.id)
+      throw new UnauthorizedException('Refresh Token not valid');
+
+    const now: number = Date.now();
+    if (Number(tokenVerified.expiredAt) < now)
+      throw new UnauthorizedException('Refresh Token Expired');
+
+    return await this.usersService.user(payload.id);
   }
 }
