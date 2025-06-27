@@ -23,7 +23,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
         },
       ]),
       secretOrKey: getEnv('JWT_SECRET_REFRESH'),
-      // ignoreExpiration: false,
+      ignoreExpiration: false,
       passReqToCallback: true,
     });
   }
