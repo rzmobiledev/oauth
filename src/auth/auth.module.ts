@@ -6,10 +6,12 @@ import { UserModule } from 'src/user/user.module';
 import { LocalStrategy } from './localStrategy';
 import { JwtStrategy } from './jwtStrategy';
 import { JwtRefreshStrategy } from './jwtRefreshStrategy';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [UserModule, JwtModule],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
   exports: [AuthService],
+  controllers: [AuthController],
 })
 export class AuthModule {}

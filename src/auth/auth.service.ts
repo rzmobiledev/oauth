@@ -2,7 +2,10 @@ import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { TUser, TUserNoPassword } from 'src/utils/userSchema';
 import { getEnv } from 'src/utils/getEnv';
-import { setAuthenticationCookies } from 'src/utils/cookies';
+import {
+  clearAuthenticationCookies,
+  setAuthenticationCookies,
+} from 'src/utils/cookies';
 import { Request, Response } from 'express';
 import { TJWTVerify, TJWTUserPayload } from 'src/utils/reqTokenSchema';
 import { JwtService } from '@nestjs/jwt';
@@ -65,5 +68,10 @@ export class AuthService {
       throw new UnauthorizedException('Refresh Token Expired');
 
     return await this.usersService.user(payload.id);
+  }
+
+  logout(res: Response) {
+    clearAuthenticationCookies(res);
+    return res.status(HttpStatus.OK).json({ message: 'Logout success' });
   }
 }

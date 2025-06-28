@@ -34,7 +34,7 @@ export class UserController {
   async user(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<TUserNoPassword | null> {
-    const user = await this.userService.user(+id);
+    const user = await this.userService.user(id);
     if (!user) throw new Error('User not found');
     return user;
   }
@@ -45,7 +45,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) user: UpdateUserDto,
   ): Promise<TUserNoPassword> {
-    const updatedUser = await this.userService.patch(+id, user);
+    const updatedUser = await this.userService.patch(id, user);
     if (!updatedUser) throw new Error('User not found');
     return updatedUser;
   }
@@ -62,9 +62,3 @@ export class UserController {
     return this.userService.create(user);
   }
 }
-
-// TODO:
-// add user login
-// add bcrypt for password
-// add jsonwebtoken
-// add passport

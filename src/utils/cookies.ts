@@ -31,6 +31,16 @@ export const getAccessTokenCookieOptions = (): CookieOptions => {
   };
 };
 
+export const getAccessTokenCookieOauthOptions = (): CookieOptions => {
+  const expiresIn = getEnv('GOOGLE_OAUTH_TOKEN_EXPIRATION_MINS');
+  const expires = calculateCookieExpiresIn(expiresIn);
+  return {
+    ...defaultCookie,
+    expires,
+    path: '/',
+  };
+};
+
 export const setAuthenticationCookies = (
   res: Response,
   accessToken: string,
@@ -39,6 +49,12 @@ export const setAuthenticationCookies = (
   res
     .cookie('accessToken', accessToken, getAccessTokenCookieOptions())
     .cookie('refreshToken', refreshToken, getRefreshTokenCookieOptions());
+
+export const setAuthenticationOauthCookies = (
+  res: Response,
+  accessToken: string,
+): Response =>
+  res.cookie('accessToken', accessToken, getAccessTokenCookieOauthOptions());
 
 export const clearAuthenticationCookies = (res: Response): Response => {
   return res

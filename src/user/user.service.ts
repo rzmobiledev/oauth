@@ -4,6 +4,7 @@ import { TRole, TUser, TUserNoPassword } from '../utils/userSchema';
 import { Prisma, User } from 'generated/prisma';
 
 import { Encryption } from 'src/utils/encryption';
+import { TGoogleUser } from 'src/utils/googleSchema';
 
 @Injectable()
 export class UserService {
@@ -30,6 +31,17 @@ export class UserService {
     return await this.dbService.user.findUnique({
       where: {
         id,
+      },
+      omit: {
+        password: true,
+      },
+    });
+  }
+
+  async email(email: string): Promise<TUserNoPassword | null> {
+    return await this.dbService.user.findUnique({
+      where: {
+        email,
       },
       omit: {
         password: true,
@@ -65,6 +77,16 @@ export class UserService {
     const hashedPassword = await this.encryption.hashPassword(password!);
     return this.dbService.user.create({
       data: { ...rest, password: hashedPassword },
+    });
+  }
+
+  async createGooleUser(user: TGoogleUser): Promise<TUser> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, picture, accessToken, ...rest } = user;
+    const password = id;
+
+    return this.dbService.user.create({
+      data: { ...rest, password: password },
     });
   }
 
