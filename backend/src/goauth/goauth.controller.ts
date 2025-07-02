@@ -1,16 +1,10 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { GoogleOauthGuard } from './google.oauth.guard';
 import { Response } from 'express';
 import { GoauthService } from './goauth.service';
 import { setAuthenticationOauthCookies } from '../utils/cookies';
 import { TGoogleUser } from '../utils/googleSchema';
+import { getEnv } from 'src/utils/getEnv';
 
 @Controller('auth')
 export class GoauthController {
@@ -28,6 +22,7 @@ export class GoauthController {
   ) {
     const token = await this.googleService.signIn(req.user);
     setAuthenticationOauthCookies(res, token);
-    return res.status(HttpStatus.OK).json({ message: 'Login success' });
+    const clientUrl = String(getEnv('ALLOWED_HOST_CORS').split(',')[0]) + '/';
+    res.redirect(clientUrl);
   }
 }

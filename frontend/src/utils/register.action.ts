@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useMutation } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { userRegisterMutation } from "./api"
-import type { TUserRegister } from '../utils/userType';
+import type { TUserRegister } from '../schemas/userType';
 import { User } from "../schemas/userSchema"
 
 export default function RegisterAction(){

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type { IAuth, IAuthState } from '../../utils/reduxType'
+import type { IAuth, IAuthState } from '../../schemas/reduxType'
 
 export const authSlice = createSlice({
     name: 'auth',

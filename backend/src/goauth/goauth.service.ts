@@ -20,7 +20,7 @@ export class GoauthService {
     if (!user) throw new BadRequestException('Unauthenticated');
     const userExist = await this.userService.email(user.email);
     if (!userExist) return this.registerUser(user);
-    return this.generateJwt({ email: user.email, id: user.id });
+    return this.generateJwt({ email: user.email, id: userExist.id });
   }
 
   async registerUser(user: TGoogleUser) {

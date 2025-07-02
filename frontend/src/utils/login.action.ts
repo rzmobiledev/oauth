@@ -9,6 +9,7 @@ import { loginMutation } from "./api";
 import { useMutation } from "@tanstack/react-query";
 
 export default function useLoginAction(){
+    const googleUrl = import.meta.env.VITE_API_BASE_URL + '/auth/google'
     const {isLoggedIn} = useSelector(authState)
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -37,6 +38,15 @@ export default function useLoginAction(){
             })
         }
     
+    const onOauthLogin = () => {
+        window.location.assign(googleUrl)
+        dispatch(login(true))
+    }
+
+    const signup = () => {
+        navigate({to: '/register'})
+    }
+    
     React.useEffect(() => {
             if (isLoggedIn) {
                 navigate({to: '/dashboard'})
@@ -44,5 +54,5 @@ export default function useLoginAction(){
         }, [isLoggedIn, navigate])
 
         
-    return {isPending, register, handleSubmit, errors, onSubmit, navigate}
+    return {isPending, register, handleSubmit, errors, onSubmit, onOauthLogin, signup}
 }

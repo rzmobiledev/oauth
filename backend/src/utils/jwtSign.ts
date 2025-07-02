@@ -21,7 +21,7 @@ export class JWTSign {
     const payloadContent = { email: this.email, id: this.userId };
     return this.jwtService.sign(payloadContent, {
       expiresIn: getEnv('GOOGLE_OAUTH_TOKEN_EXPIRATION_MINS') + 'ms',
-      secret: getEnv('GOOGLE_CLIENT_SECRET'),
+      secret: getEnv('JWT_SECRET_ACCESS'),
     });
   }
 

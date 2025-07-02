@@ -1,4 +1,4 @@
-import type { TRole } from "./userType";
+import type { TRole } from "../schemas/userType";
 
 export const Roles = {
     ADMIN: 'ADMIN' as TRole,

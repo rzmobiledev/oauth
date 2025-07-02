@@ -2,10 +2,7 @@ import LoginAction from '../utils/login.action'
 
 export function Home() {
     
-    const {isPending, register, handleSubmit, errors, onSubmit, navigate} = LoginAction()
-    const signup = () => {
-        navigate({to: '/register'})
-    }
+    const {isPending, register, handleSubmit, errors, onSubmit, onOauthLogin, signup} = LoginAction()
     
     return <div className="login-container">
     <div className="login-wrapper">
@@ -19,9 +16,9 @@ export function Home() {
                 {errors?.password && <span className="error">{errors.password.message}</span>}
                 <input type="password" placeholder="password123" {...register('password')} className={errors?.password ? 'error': ''}/>
             </div>
-            <button type="submit" className="signin" disabled={isPending}>Signin</button>
+            <button type="submit" className="signin" disabled={isPending}>{isPending ? 'Processing...' : 'Signin'}</button>
             <span className="clue">or signin with</span>
-            <button type="button" className="google">Google</button>
+            <button type="button" className="google" onClick={onOauthLogin}>Google</button>
         </form>
 
         <div className="welcome">
