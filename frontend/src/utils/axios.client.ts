@@ -29,10 +29,12 @@ API.interceptors.response.use(
     async (error: AxiosError<TError>) => {
         const { message, response, config } = error
         const originalRequest = config as TConfig;
+
         if (response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true; // Mark the request as true to avoid infinite loops.
             try {
-                await axios.post('/auth/refresh')
+                const NEWAPI = axios.create(options)
+                await NEWAPI.post('/auth/refresh')
                 return API(originalRequest)
             } catch (refreshError) {
                 return Promise.reject(refreshError);

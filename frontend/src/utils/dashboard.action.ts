@@ -41,8 +41,8 @@ export default function DashboardAction(){
                 dispatch(login(false))
                 persistor.purge()
             },
-            onError: (error) => {
-                alert(error)
+            onError: () => {
+                navigate({to: '/'})
                 persistor.purge()
             }
         })
